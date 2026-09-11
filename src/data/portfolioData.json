@@ -1,0 +1,236 @@
+[
+  {
+    "particulars": "HDFC Bank",
+    "purchasePrice": 1490,
+    "quantity": 50,
+    "investment": 74500,
+    "portfolioPercentage": 5,
+    "exchangeCode": "HDFCBANK",
+    "sector": "Financial Sector"
+  },
+  {
+    "particulars": "Bajaj Finance",
+    "purchasePrice": 6466,
+    "quantity": 15,
+    "investment": 96990,
+    "portfolioPercentage": 6,
+    "exchangeCode": "BAJFINANCE",
+    "sector": "Financial Sector"
+  },
+  {
+    "particulars": "ICICI Bank",
+    "purchasePrice": 780,
+    "quantity": 84,
+    "investment": 65520,
+    "portfolioPercentage": 4,
+    "exchangeCode": "532174",
+    "sector": "Financial Sector"
+  },
+  {
+    "particulars": "Bajaj Housing",
+    "purchasePrice": 130,
+    "quantity": 504,
+    "investment": 65520,
+    "portfolioPercentage": 4,
+    "exchangeCode": "544252",
+    "sector": "Financial Sector"
+  },
+  {
+    "particulars": "Savani Financials",
+    "purchasePrice": 24,
+    "quantity": 1080,
+    "investment": 25920,
+    "portfolioPercentage": 2,
+    "exchangeCode": "511577",
+    "sector": "Financial Sector"
+  },
+  {
+    "particulars": "Affle India",
+    "purchasePrice": 1151,
+    "quantity": 50,
+    "investment": 57550,
+    "portfolioPercentage": 4,
+    "exchangeCode": "AFFLE",
+    "sector": "Tech Sector"
+  },
+  {
+    "particulars": "LTI Mindtree",
+    "purchasePrice": 4775,
+    "quantity": 16,
+    "investment": 76400,
+    "portfolioPercentage": 5,
+    "exchangeCode": "LTIM",
+    "sector": "Tech Sector"
+  },
+  {
+    "particulars": "KPIT Tech",
+    "purchasePrice": 672,
+    "quantity": 61,
+    "investment": 40992,
+    "portfolioPercentage": 3,
+    "exchangeCode": "542651",
+    "sector": "Tech Sector"
+  },
+  {
+    "particulars": "Tata Tech",
+    "purchasePrice": 1072,
+    "quantity": 63,
+    "investment": 67536,
+    "portfolioPercentage": 4,
+    "exchangeCode": "544028",
+    "sector": "Tech Sector"
+  },
+  {
+    "particulars": "BLS E-Services",
+    "purchasePrice": 232,
+    "quantity": 191,
+    "investment": 44312,
+    "portfolioPercentage": 3,
+    "exchangeCode": "544107",
+    "sector": "Tech Sector"
+  },
+  {
+    "particulars": "Tanla",
+    "purchasePrice": 1134,
+    "quantity": 45,
+    "investment": 51030,
+    "portfolioPercentage": 3,
+    "exchangeCode": "532790",
+    "sector": "Tech Sector"
+  },
+  {
+    "particulars": "Dmart",
+    "purchasePrice": 3777,
+    "quantity": 27,
+    "investment": 101979,
+    "portfolioPercentage": 7,
+    "exchangeCode": "DMART",
+    "sector": "Consumer"
+  },
+  {
+    "particulars": "Tata Consumer",
+    "purchasePrice": 845,
+    "quantity": 90,
+    "investment": 76050,
+    "portfolioPercentage": 5,
+    "exchangeCode": "532540",
+    "sector": "Consumer"
+  },
+  {
+    "particulars": "Pidilite",
+    "purchasePrice": 2376,
+    "quantity": 36,
+    "investment": 85536,
+    "portfolioPercentage": 6,
+    "exchangeCode": "500331",
+    "sector": "Consumer"
+  },
+  {
+    "particulars": "Tata Power",
+    "purchasePrice": 224,
+    "quantity": 225,
+    "investment": 50400,
+    "portfolioPercentage": 3,
+    "exchangeCode": "500400",
+    "sector": "Power"
+  },
+  {
+    "particulars": "KPI Green",
+    "purchasePrice": 875,
+    "quantity": 50,
+    "investment": 43750,
+    "portfolioPercentage": 3,
+    "exchangeCode": "542323",
+    "sector": "Power"
+  },
+  {
+    "particulars": "Suzlon",
+    "purchasePrice": 44,
+    "quantity": 450,
+    "investment": 19800,
+    "portfolioPercentage": 1,
+    "exchangeCode": "532667",
+    "sector": "Power"
+  },
+  {
+    "particulars": "Gensol",
+    "purchasePrice": 998,
+    "quantity": 45,
+    "investment": 44910,
+    "portfolioPercentage": 3,
+    "exchangeCode": "542851",
+    "sector": "Power"
+  },
+  {
+    "particulars": "Hariom Pipes",
+    "purchasePrice": 580,
+    "quantity": 60,
+    "investment": 34800,
+    "portfolioPercentage": 2,
+    "exchangeCode": "543517",
+    "sector": "Pipe Sector"
+  },
+  {
+    "particulars": "Astral",
+    "purchasePrice": 1517,
+    "quantity": 56,
+    "investment": 84952,
+    "portfolioPercentage": 6,
+    "exchangeCode": "ASTRAL",
+    "sector": "Pipe Sector"
+  },
+  {
+    "particulars": "Polycab",
+    "purchasePrice": 2818,
+    "quantity": 28,
+    "investment": 78904,
+    "portfolioPercentage": 5,
+    "exchangeCode": "542652",
+    "sector": "Pipe Sector"
+  },
+  {
+    "particulars": "Clean Science",
+    "purchasePrice": 1610,
+    "quantity": 32,
+    "investment": 51520,
+    "portfolioPercentage": 3,
+    "exchangeCode": "543318",
+    "sector": "Others"
+  },
+  {
+    "particulars": "Deepak Nitrite",
+    "purchasePrice": 2248,
+    "quantity": 27,
+    "investment": 60696,
+    "portfolioPercentage": 4,
+    "exchangeCode": "506401",
+    "sector": "Others"
+  },
+  {
+    "particulars": "Fine Organic",
+    "purchasePrice": 4284,
+    "quantity": 16,
+    "investment": 68544,
+    "portfolioPercentage": 4,
+    "exchangeCode": "541557",
+    "sector": "Others"
+  },
+  {
+    "particulars": "Gravita",
+    "purchasePrice": 2037,
+    "quantity": 8,
+    "investment": 16296,
+    "portfolioPercentage": 1,
+    "exchangeCode": "533282",
+    "sector": "Others"
+  },
+  {
+    "particulars": "SBI Life",
+    "purchasePrice": 1197,
+    "quantity": 49,
+    "investment": 58653,
+    "portfolioPercentage": 4,
+    "exchangeCode": "540719",
+    "sector": "Others"
+  }
+]
