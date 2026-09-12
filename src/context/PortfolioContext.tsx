@@ -4,7 +4,11 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import portfolioData from "@/data/portfolioData.json";
 import { calculateHolding } from "@/lib/portfolioCalculations";
-import type { CalculatedHolding, PortfolioHolding } from "@/types/portfolio";
+import type {
+  CalculatedHolding,
+  PortfolioHolding,
+  ProviderError,
+} from "@/types/types";
 
 const staticHoldings = portfolioData as PortfolioHolding[];
 const initialHoldings = staticHoldings.map((holding) =>
@@ -12,12 +16,6 @@ const initialHoldings = staticHoldings.map((holding) =>
 );
 
 const REFRESH_INTERVAL_MS = 15_000;
-
-export type ProviderError = {
-  particulars: string;
-  exchangeCode: string;
-  message: string;
-};
 
 type PortfolioResponse = {
   holdings: CalculatedHolding[];
@@ -62,6 +60,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
             {
               particulars: "Portfolio",
               exchangeCode: "",
+              provider: "Portfolio API",
               message: "Portfolio data could not be refreshed",
             },
           ]);
