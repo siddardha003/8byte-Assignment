@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -9,11 +8,11 @@ import {
   PieChart,
 } from "lucide-react";
 import Header from "@/components/Header";
+import GainLossIndicator from "@/components/GainLossIndicator";
 import Sidebar from "@/components/Sidebar";
 import StatCard from "@/components/StatCard";
-import portfolioData from "@/data/portfolioData.json";
+import { usePortfolio } from "@/context/PortfolioContext";
 import {
-  calculateHolding,
   calculateTotalGainLoss,
   calculateTotalGainLossPercentage,
   calculateTotalInvestment,
@@ -21,10 +20,6 @@ import {
   findHighestGainHolding,
   summarizeSectors,
 } from "@/lib/portfolioCalculations";
-import type { PortfolioHolding } from "@/types/portfolio";
-import type { CalculatedHolding } from "@/types/portfolio";
-
-const holdings = portfolioData as PortfolioHolding[];
 
 const sectorColors = [
   "#176b87",
@@ -34,14 +29,6 @@ const sectorColors = [
   "#55a66f",
   "#d1b35a",
 ];
-
-const initialCalculatedHoldings = holdings.map((holding) =>
-  calculateHolding(holding, {
-    cmp: null,
-    peRatio: null,
-    latestEarnings: null,
-  }),
-);
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -56,61 +43,8 @@ const formatValue = (value: number | null, suffix = "") =>
 const formatOptionalCurrency = (value: number | null) =>
   value === null ? "Awaiting CMP" : formatCurrency(value);
 
-type PortfolioResponse = {
-  holdings: CalculatedHolding[];
-  providerErrors: Array<{
-    particulars: string;
-    exchangeCode: string;
-    message: string;
-  }>;
-};
-
 export default function Home() {
-  const [calculatedHoldings, setCalculatedHoldings] = useState(
-    initialCalculatedHoldings,
-  );
-  const [providerErrors, setProviderErrors] = useState<
-    PortfolioResponse["providerErrors"]
-  >([]);
-
-  useEffect(() => {
-    let active = true;
-
-    const loadPortfolio = async () => {
-      try {
-        const response = await fetch("/api/portfolio");
-
-        if (!response.ok) {
-          throw new Error("Portfolio data could not be loaded");
-        }
-
-        const data = (await response.json()) as PortfolioResponse;
-
-        if (active) {
-          setCalculatedHoldings(data.holdings);
-          setProviderErrors(data.providerErrors);
-        }
-      } catch {
-        if (active) {
-          setProviderErrors([
-            {
-              particulars: "Portfolio",
-              exchangeCode: "",
-              message: "Portfolio data could not be refreshed",
-            },
-          ]);
-        }
-      }
-    };
-
-    loadPortfolio();
-    const interval = setInterval(loadPortfolio, 15_000);
-
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
-  }, []);
+  const { holdings: calculatedHoldings, providerErrors } = usePortfolio();
 
   const totalInvestment = calculateTotalInvestment(calculatedHoldings);
   const sectorSummaries = summarizeSectors(calculatedHoldings).map(
@@ -238,7 +172,7 @@ export default function Home() {
                 iconColor="text-[#d95d69]"
               />
               <StatCard
-                label="Highest gain % holding"
+                label="Highest Gain % holding"
                 value={highestGainHolding ? `${highestGainHolding.particulars} (${formatValue(highestGainHolding.gainLossPercentage, "%")})` : "Awaiting CMP"}
                 caption="Best current gain percentage"
                 Icon={ArrowUpRight}
@@ -263,10 +197,10 @@ export default function Home() {
                 <thead>
                   <tr className="border-b border-[#edf2f0] text-[11px] uppercase tracking-[0.13em] text-[#9aaba7]">
                     <th className="pb-3 font-semibold">Sector</th>
-                    <th className="pb-3 text-right font-semibold">Holdings</th>
-                    <th className="pb-3 text-right font-semibold">Investment</th>
-                    <th className="pb-3 text-right font-semibold">Present value</th>
-                    <th className="pb-3 text-right font-semibold">Gain/Loss %</th>
+                    <th className="pb-3 text-center font-semibold">Holdings</th>
+                    <th className="pb-3 text-center font-semibold">Investment</th>
+                    <th className="pb-3 text-center font-semibold">Present value</th>
+                    <th className="pb-3 text-center font-semibold">Gain/Loss (%)</th>
                     <th className="pb-3 text-right font-semibold">Portfolio %</th>
                   </tr>
                 </thead>
@@ -276,19 +210,23 @@ export default function Home() {
                       <td className="py-4 font-semibold text-[#284b4d]">
                         {sector.sector}
                       </td>
-                      <td className="py-4 text-right text-[#66807d]">
+                      <td className="py-4 text-center text-[#66807d]">
                         {sector.holdings}
                       </td>
-                      <td className="py-4 text-right font-semibold text-[#173f47]">
+                      <td className="py-4 text-center text-[#173f47]">
                         {formatCurrency(sector.totalInvestment)}
                       </td>
-                      <td className="py-4 text-right text-[#82938f]">
+                      <td className="py-4 text-center font-semibold text-[#173f47]">
                         {formatOptionalCurrency(sector.totalPresentValue)}
                       </td>
-                      <td className="py-4 text-right text-[#82938f]">
-                        {formatValue(sector.gainLossPercentage, "%")}
+                      <td className="py-4 text-center">
+                        <GainLossIndicator
+                          gainLoss={sector.gainLoss}
+                          gainLossPercentage={sector.gainLossPercentage}
+                          formatCurrency={formatCurrency}
+                        />
                       </td>
-                      <td className="py-4 text-right font-semibold text-[#173f47]">
+                      <td className="py-4 text-right text-[#82938f]">
                         {Math.round(sector.portfolioPercentage)}%
                       </td>
                     </tr>

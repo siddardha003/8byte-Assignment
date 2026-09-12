@@ -2,7 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BarChart3, Search } from "lucide-react";
+import { RefreshCw } from "lucide-react";
+import { usePortfolio } from "@/context/PortfolioContext";
 
 function getGreeting(date: Date) {
   const hour = date.getHours();
@@ -42,6 +43,8 @@ function Greeting({ name }: { name: string }) {
 }
 
 export default function Header() {
+  const { lastUpdated, isLoading } = usePortfolio();
+
   return (
     <header className="flex flex-col gap-5 border-b border-[#dce7e2] pb-7 sm:flex-row sm:items-center sm:justify-between">
       <div>
@@ -51,19 +54,10 @@ export default function Header() {
         </p>
       </div>
       <div className="flex items-center gap-3">
-        <button
-          className="flex h-11 items-center gap-2 rounded-xl border border-[#dce7e2] bg-white px-4 text-sm font-medium text-[#52706c] shadow-sm transition hover:border-[#a8c9c0]"
-          type="button"
-        >
-          <Search size={17} />{" "}
-          <span className="hidden sm:inline">Search portfolio</span>
-        </button>
-        <button
-          className="flex h-11 items-center gap-2 rounded-xl bg-[#176b87] px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#125a70]"
-          type="button"
-        >
-          <BarChart3 size={17} /> Overview
-        </button>
+        <div className="flex items-center gap-2 text-xs text-[#82938f]">
+          <RefreshCw size={14} className={isLoading ? "animate-spin" : ""} />
+          {lastUpdated ? `Updated ${lastUpdated}` : "Loading market data"}
+        </div>
       </div>
     </header>
   );
