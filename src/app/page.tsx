@@ -9,6 +9,11 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import StatCard from "@/components/StatCard";
 import portfolioData from "@/data/portfolioData.json";
+import {
+  calculateHolding,
+  calculateTotalInvestment,
+  summarizeSectors,
+} from "@/lib/portfolioCalculations";
 import type { PortfolioHolding } from "@/types/portfolio";
 
 const holdings = portfolioData as PortfolioHolding[];
@@ -22,36 +27,32 @@ const sectorColors = [
   "#d1b35a",
 ];
 
-const totalInvestment = holdings.reduce(
-  (total, holding) => total + holding.investment,
-  0,
+const calculatedHoldings = holdings.map((holding) =>
+  calculateHolding(holding, {
+    cmp: null,
+    peRatio: null,
+    latestEarnings: null,
+  }),
 );
 
-const sectorSummaries = Array.from(
-  holdings.reduce((sectors, holding) => {
-    const current = sectors.get(holding.sector) ?? {
-      sector: holding.sector,
-      investment: 0,
-      holdings: 0,
-    };
+const totalInvestment = calculateTotalInvestment(holdings);
 
-    current.investment += holding.investment;
-    current.holdings += 1;
-    sectors.set(holding.sector, current);
-    return sectors;
-  }, new Map<string, { sector: string; investment: number; holdings: number }>()),
-).map(([sector, summary], index) => ({
-  ...summary,
-  sector,
-  percentage: summary.investment / totalInvestment,
-  color: sectorColors[index % sectorColors.length],
-}));
+const sectorSummaries = summarizeSectors(calculatedHoldings).map(
+  (sector, index) => ({
+    ...sector,
+    color: sectorColors[index % sectorColors.length],
+  }),
+);
+
+const largestAllocation = sectorSummaries.reduce((largest, sector) =>
+  sector.totalInvestment > largest.totalInvestment ? sector : largest,
+);
 
 const allocationGradient = sectorSummaries.reduce((gradient, sector, index) => {
   const start = sectorSummaries
     .slice(0, index)
-    .reduce((total, item) => total + item.percentage * 100, 0);
-  const end = start + sector.percentage * 100;
+    .reduce((total, item) => total + item.portfolioPercentage, 0);
+    const end = start + sector.portfolioPercentage;
   return `${gradient}${index === 0 ? "" : ", "}${sector.color} ${start}% ${end}%`;
 }, "");
 
@@ -117,7 +118,7 @@ export default function Home() {
                       </span>
                     </span>
                     <span className="font-semibold text-[#173f47]">
-                      {Math.round(sector.percentage * 100)}%
+                      {Math.round(sector.portfolioPercentage)}%
                     </span>
                   </div>
                 ))}
@@ -155,8 +156,8 @@ export default function Home() {
               />
               <StatCard
                 label="Largest allocation"
-                value={sectorSummaries[0].sector.replace(" Sector", "")}
-                caption={`${Math.round(sectorSummaries[0].percentage * 100)}% of invested capital`}
+                value={largestAllocation.sector.replace(" Sector", "")}
+                caption={`${Math.round(largestAllocation.portfolioPercentage)}% of invested capital`}
                 Icon={PieChart}
                 iconColor="text-[#d95d69]"
               />
@@ -203,7 +204,7 @@ export default function Home() {
                         {sector.holdings}
                       </td>
                       <td className="py-4 text-right font-semibold text-[#173f47]">
-                        {formatCurrency(sector.investment)}
+                        {formatCurrency(sector.totalInvestment)}
                       </td>
                       <td className="py-4 text-right text-[#82938f]">
                         Awaiting CMP
@@ -212,7 +213,7 @@ export default function Home() {
                         Awaiting CMP
                       </td>
                       <td className="py-4 text-right font-semibold text-[#173f47]">
-                        {Math.round(sector.percentage * 100)}%
+                        {Math.round(sector.portfolioPercentage)}%
                       </td>
                     </tr>
                   ))}

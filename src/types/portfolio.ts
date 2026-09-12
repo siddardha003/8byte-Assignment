@@ -22,7 +22,10 @@ export type CalculatedHolding = PortfolioHolding & MarketData & {
 
 export type SectorSummary = {
   sector: string;
+  holdings: number;
   totalInvestment: number;
-  totalPresentValue: number;
-  gainLoss: number;
+  totalPresentValue: number | null;
+  gainLoss: number | null;
+  gainLossPercentage: number | null;
+  portfolioPercentage: number;
 };
