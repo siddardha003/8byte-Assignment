@@ -1,29 +1,16 @@
 import { getCachedValue, setCachedValue } from "@/lib/cache";
 import { calculateHolding } from "@/lib/portfolioCalculations";
-import {
-  getGoogleFinanceMetrics,
-  type GoogleFinanceMetrics,
-} from "@/services/googleFinance";
+import { getGoogleFinanceMetrics } from "@/services/googleFinance";
 import { getYahooPrice, getYahooTicker } from "@/services/yahooFinance";
 import type {
-  CalculatedHolding,
+  GoogleFinanceMetrics,
+  MarketDataResult,
   PortfolioHolding,
-} from "@/types/portfolio";
+  ProviderError,
+} from "@/types/types";
 
 const yahooCacheTtlMs = 15_000;
 const googleCacheTtlMs = 15_000;
-
-type ProviderError = {
-  particulars: string;
-  exchangeCode: string;
-  provider: "Yahoo Finance" | "Google Finance";
-  message: string;
-};
-
-export type MarketDataResult = {
-  holdings: CalculatedHolding[];
-  providerErrors: ProviderError[];
-};
 
 async function getCachedYahooPrice(ticker: string) {
   const cacheKey = `yahoo:${ticker}`;

@@ -3,7 +3,7 @@ import type {
   MarketData,
   PortfolioHolding,
   SectorSummary,
-} from "@/types/portfolio";
+} from "@/types/types";
 
 export function calculateInvestment(
   purchasePrice: number,

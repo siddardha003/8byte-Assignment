@@ -1,6 +1,6 @@
 import portfolioData from "@/data/portfolioData.json";
 import { getMarketData } from "@/services/marketData";
-import type { PortfolioHolding } from "@/types/portfolio";
+import type { PortfolioHolding } from "@/types/types";
 
 const holdings = portfolioData as PortfolioHolding[];
 

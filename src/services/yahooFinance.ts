@@ -1,20 +1,4 @@
-type YahooChartResponse = {
-  chart?: {
-    result?: Array<{
-      meta?: {
-        regularMarketPrice?: number;
-      };
-      indicators?: {
-        quote?: Array<{
-          close?: Array<number | null>;
-        }>;
-      };
-    } | null>;
-    error?: {
-      description?: string;
-    } | null;
-  };
-};
+import type { YahooChartResponse } from "@/types/types";
 
 const yahooTickers: Record<string, string> = {
   HDFCBANK  : "HDFCBANK.NS",

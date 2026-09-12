@@ -1,12 +1,4 @@
-type GoogleQuote = {
-  symbol: string;
-  exchange: string;
-};
-
-export type GoogleFinanceMetrics = {
-  peRatio: number | null;
-  latestEarnings: number | null;
-};
+import type { GoogleFinanceMetrics, GoogleQuote } from "@/types/types";
 
 const googleQuotes: Record<string, GoogleQuote> = {
   HDFCBANK: { symbol: "HDFCBANK", exchange: "NSE" },
