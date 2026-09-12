@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
@@ -11,10 +14,15 @@ import StatCard from "@/components/StatCard";
 import portfolioData from "@/data/portfolioData.json";
 import {
   calculateHolding,
+  calculateTotalGainLoss,
+  calculateTotalGainLossPercentage,
   calculateTotalInvestment,
+  calculateTotalPresentValue,
+  findHighestGainHolding,
   summarizeSectors,
 } from "@/lib/portfolioCalculations";
 import type { PortfolioHolding } from "@/types/portfolio";
+import type { CalculatedHolding } from "@/types/portfolio";
 
 const holdings = portfolioData as PortfolioHolding[];
 
@@ -27,34 +35,13 @@ const sectorColors = [
   "#d1b35a",
 ];
 
-const calculatedHoldings = holdings.map((holding) =>
+const initialCalculatedHoldings = holdings.map((holding) =>
   calculateHolding(holding, {
     cmp: null,
     peRatio: null,
     latestEarnings: null,
   }),
 );
-
-const totalInvestment = calculateTotalInvestment(holdings);
-
-const sectorSummaries = summarizeSectors(calculatedHoldings).map(
-  (sector, index) => ({
-    ...sector,
-    color: sectorColors[index % sectorColors.length],
-  }),
-);
-
-const largestAllocation = sectorSummaries.reduce((largest, sector) =>
-  sector.totalInvestment > largest.totalInvestment ? sector : largest,
-);
-
-const allocationGradient = sectorSummaries.reduce((gradient, sector, index) => {
-  const start = sectorSummaries
-    .slice(0, index)
-    .reduce((total, item) => total + item.portfolioPercentage, 0);
-    const end = start + sector.portfolioPercentage;
-  return `${gradient}${index === 0 ? "" : ", "}${sector.color} ${start}% ${end}%`;
-}, "");
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -63,7 +50,96 @@ const formatCurrency = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value);
 
+const formatValue = (value: number | null, suffix = "") =>
+  value === null ? "Awaiting CMP" : `${value.toFixed(2)}${suffix}`;
+
+const formatOptionalCurrency = (value: number | null) =>
+  value === null ? "Awaiting CMP" : formatCurrency(value);
+
+type PortfolioResponse = {
+  holdings: CalculatedHolding[];
+  providerErrors: Array<{
+    particulars: string;
+    exchangeCode: string;
+    message: string;
+  }>;
+};
+
 export default function Home() {
+  const [calculatedHoldings, setCalculatedHoldings] = useState(
+    initialCalculatedHoldings,
+  );
+  const [providerErrors, setProviderErrors] = useState<
+    PortfolioResponse["providerErrors"]
+  >([]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadPortfolio = async () => {
+      try {
+        const response = await fetch("/api/portfolio");
+
+        if (!response.ok) {
+          throw new Error("Portfolio data could not be loaded");
+        }
+
+        const data = (await response.json()) as PortfolioResponse;
+
+        if (active) {
+          setCalculatedHoldings(data.holdings);
+          setProviderErrors(data.providerErrors);
+        }
+      } catch {
+        if (active) {
+          setProviderErrors([
+            {
+              particulars: "Portfolio",
+              exchangeCode: "",
+              message: "Portfolio data could not be refreshed",
+            },
+          ]);
+        }
+      }
+    };
+
+    loadPortfolio();
+    const interval = setInterval(loadPortfolio, 15_000);
+
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  const totalInvestment = calculateTotalInvestment(calculatedHoldings);
+  const sectorSummaries = summarizeSectors(calculatedHoldings).map(
+    (sector, index) => ({
+      ...sector,
+      color: sectorColors[index % sectorColors.length],
+    }),
+  );
+  const largestAllocation = sectorSummaries.reduce((largest, sector) =>
+    sector.totalInvestment > largest.totalInvestment ? sector : largest,
+  );
+  const allocationGradient = sectorSummaries.reduce((gradient, sector, index) => {
+    const start = sectorSummaries
+      .slice(0, index)
+      .reduce((total, item) => total + item.portfolioPercentage, 0);
+    const end = start + sector.portfolioPercentage;
+    return `${gradient}${index === 0 ? "" : ", "}${sector.color} ${start}% ${end}%`;
+  }, "");
+  const totalPresentValue = calculateTotalPresentValue(calculatedHoldings);
+  const totalGainLoss = calculateTotalGainLoss(
+    totalPresentValue,
+    totalInvestment,
+  );
+  const totalGainLossPercentage = calculateTotalGainLossPercentage(
+    totalGainLoss,
+    totalInvestment,
+  );
+  const highestGainHolding = findHighestGainHolding(calculatedHoldings);
+
   return (
     <div className="min-h-screen bg-[#f4f7f6] text-[#172b2c]">
       <div className="mx-auto flex min-h-screen max-w-[1600px]">
@@ -135,21 +211,21 @@ export default function Home() {
               />
               <StatCard
                 label="Present value"
-                value="Awaiting CMP"
-                caption="Live market data coming next"
+                value={formatOptionalCurrency(totalPresentValue)}
+                caption={providerErrors.length ? `${providerErrors.length} holdings need review` : "Updated from Yahoo Finance"}
                 Icon={ArrowUpRight}
                 iconColor="text-[#ee9b4a]"
               />
               <StatCard
                 label="Total Gain/Loss %"
-                value="Awaiting CMP"
-                caption="Calculated after market data refresh"
+                value={formatValue(totalGainLossPercentage, "%")}
+                caption="Calculated from current market prices"
                 Icon={Gauge}
                 iconColor="text-[#55a66f]"
               />
               <StatCard
                 label="Active holdings"
-                value={holdings.length}
+                value={calculatedHoldings.length}
                 caption={`Across ${sectorSummaries.length} sectors`}
                 Icon={BriefcaseBusiness}
                 iconColor="text-[#6c63a8]"
@@ -163,8 +239,8 @@ export default function Home() {
               />
               <StatCard
                 label="Highest gain % holding"
-                value="Awaiting CMP"
-                caption="Calculated after market data refresh"
+                value={highestGainHolding ? `${highestGainHolding.particulars} (${formatValue(highestGainHolding.gainLossPercentage, "%")})` : "Awaiting CMP"}
+                caption="Best current gain percentage"
                 Icon={ArrowUpRight}
                 iconColor="text-[#ee9b4a]"
               />
@@ -207,10 +283,10 @@ export default function Home() {
                         {formatCurrency(sector.totalInvestment)}
                       </td>
                       <td className="py-4 text-right text-[#82938f]">
-                        Awaiting CMP
+                        {formatOptionalCurrency(sector.totalPresentValue)}
                       </td>
                       <td className="py-4 text-right text-[#82938f]">
-                        Awaiting CMP
+                        {formatValue(sector.gainLossPercentage, "%")}
                       </td>
                       <td className="py-4 text-right font-semibold text-[#173f47]">
                         {Math.round(sector.portfolioPercentage)}%

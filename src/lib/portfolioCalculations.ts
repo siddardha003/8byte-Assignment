@@ -34,7 +34,7 @@ export function calculateGainLossPercentage(
   return (gainLoss / investment) * 100;
 }
 
-export function  calculateHolding(
+export function calculateHolding(
   holding: PortfolioHolding,
   marketData: MarketData,
 ): CalculatedHolding {
@@ -117,4 +117,49 @@ export function summarizeSectors(
       ),
     };
   });
+}
+
+export function calculateTotalPresentValue(holdings: CalculatedHolding[]) {
+  if (holdings.some((holding) => holding.presentValue === null)) {
+    return null;
+  }
+
+  return holdings.reduce(
+    (total, holding) => total + (holding.presentValue ?? 0),
+    0,
+  );
+}
+
+export function calculateTotalGainLoss(
+  totalPresentValue: number | null,
+  totalInvestment: number,
+) {
+  return totalPresentValue === null
+    ? null
+    : totalPresentValue - totalInvestment;
+}
+
+export function calculateTotalGainLossPercentage(
+  totalGainLoss: number | null,
+  totalInvestment: number,
+) {
+  return calculateGainLossPercentage(totalGainLoss, totalInvestment);
+}
+
+export function findHighestGainHolding(holdings: CalculatedHolding[]) {
+  return holdings.reduce<CalculatedHolding | undefined>((highest, holding) => {
+    if (holding.gainLossPercentage === null) {
+      return highest;
+    }
+
+    if (
+      !highest ||
+      (highest.gainLossPercentage ?? Number.NEGATIVE_INFINITY) <
+        holding.gainLossPercentage
+    ) {
+      return holding;
+    }
+
+    return highest;
+  }, undefined);
 }
